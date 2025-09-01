@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Define an async thunk to fetch track data from a local JSON file
 export const fetchTracks = createAsyncThunk('tracks/fetchTracks', async () => {
-  const response = await axios.get(`${process.env.PUBLIC_URL}/tracks.json`);
+  const response = await axios.get('tracks.json');
   return response.data;
 });
 
