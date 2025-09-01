@@ -64,24 +64,34 @@ const AudioList = () => {
    * necessary).
    */
   const handleEnded = (index) => {
+    // only handle the end event for the currently playing track
     if (currentTrackIndex !== index) return;
-    // Determine if we should repeat the same track
-    if (repeatTimes === Infinity || currentPlayCount < repeatTimes) {
-      // replay current track
-      const audio = audioRefs.current[index];
-      if (audio) {
-        setCurrentPlayCount((prev) => prev + 1);
-        // restart playback
-        audio.currentTime = 0;
-        audio.play();
-      }
+    const audio = audioRefs.current[index];
+    if (!audio) return;
+    // calculate how many times this track has been played including this finished play
+    const newCount = currentPlayCount + 1;
+    /*
+     * We want to play each track `repeatTimes` number of times. Because the first
+     * play starts with `currentPlayCount = 1`, a track should be repeated as
+     * long as `newCount` (the upcoming play count) is less than or equal to
+     * `repeatTimes`. For example: if repeatTimes = 3, the track is played when
+     * newCount = 2 and 3. When newCount becomes 4 it will advance to the next track.
+     */
+    if (repeatTimes === Infinity || newCount <= repeatTimes) {
+      // repeat the same track
+      setCurrentPlayCount(newCount);
+      // restart playback of the current audio element
+      audio.currentTime = 0;
+      audio.play();
     } else {
-      // move to next track
+      // move to the next track in the list (cycle back to first if at end)
       const nextIndex = (index + 1) % tracks.length;
       setCurrentTrackIndex(nextIndex);
+      // reset play count for the new track
       setCurrentPlayCount(1);
       const nextAudio = audioRefs.current[nextIndex];
       if (nextAudio) {
+        // pause any other playing audio elements
         pauseOthers(nextIndex);
         nextAudio.currentTime = 0;
         nextAudio.play();
