@@ -5,7 +5,7 @@ import store from './store';
 import App from './App';
 // Import Ant Design styles
 import 'antd/dist/reset.css';
-import 'antd/dist/antd.cssi
+import'antd/dist/antd.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
